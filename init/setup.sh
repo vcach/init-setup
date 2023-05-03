@@ -2,7 +2,7 @@ echo "Install EKS toolset"
 echo "------------------------------------------------------"
 
 echo "kubectl..."
-sudo curl --silent --location -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.17/2023-03-17/bin/darwin/amd64/kubectl
+sudo curl --silent --location -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.17/2023-03-17/bin/linux/amd64/kubectl
 chmod +x /usr/local/bin/kubectl
 kubectl completion bash >>  /home/ec2-user/.bash_completion
 chown ec2-user.ec2-user /home/ec2-user/.bash_completion
