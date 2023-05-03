@@ -1,6 +1,12 @@
 echo "Install EKS toolset"
 echo "------------------------------------------------------"
 
+#curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+#unzip awscliv2.zip
+#sudo ./aws/install
+#aws --version
+#. ~/.bash_profile
+
 echo "kubectl..."
 sudo curl --silent --location -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.17/2023-03-17/bin/linux/amd64/kubectl
 chmod +x /usr/local/bin/kubectl
@@ -19,10 +25,17 @@ echo 'yq() {
   docker run --rm -i -v "${PWD}":/workdir mikefarah/yq "$@"
 }' | tee -a ~/.bashrc && source ~/.bashrc
 
+echo "export ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)"  >>  ~/.bash_profile
+echo "export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')"  >>  ~/.bash_profile
+.  ~/.bash_profile
+echo "export AZS=($(aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --output text --region $AWS_REGION))"  >>  ~/.bash_profile
+.  ~/.bash_profile
+source ~/.bash_profile
 
-export AZS=($(aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --output text --region $AWS_REGION))
+aws configure set default.region ${AWS_REGION}
+aws configure get default.region
 
-
+#export AZS=($(aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --output text --region $AWS_REGION))
 echo "creating eks cluster in region ${AWS_REGION} in AZs ${AZS[0]} ${AZS[1]} ${AZS[2]}"
 
 
