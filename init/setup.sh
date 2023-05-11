@@ -9,13 +9,13 @@ echo "------------------------------------------------------"
 
 echo "kubectl..."
 sudo curl --silent --location -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.17/2023-03-17/bin/linux/amd64/kubectl
-chmod +x /usr/local/bin/kubectl
+sudo chmod +x /usr/local/bin/kubectl
 kubectl completion bash >>  /home/ec2-user/.bash_completion
-chown ec2-user.ec2-user /home/ec2-user/.bash_completion
+sudo chown ec2-user.ec2-user /home/ec2-user/.bash_completion
 
 echo "eksctl..."
-curl -sLO "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz"
-tar xz -C /tmp -f "eksctl_$(uname -s)_amd64.tar.gz"
+sudo curl -sLO "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz"
+sudo tar xz -C /tmp -f "eksctl_$(uname -s)_amd64.tar.gz"
 sudo install -o root -g root -m 0755 /tmp/eksctl /usr/local/bin/eksctl
 rm -f ./"eksctl_$(uname -s)_amd64.tar.gz"
 
