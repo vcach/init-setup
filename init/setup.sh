@@ -67,27 +67,25 @@ EOF
 
 eksctl create cluster -f ekscluster.yaml
 
-aws eks --region $AWS_REGION update-kubeconfig --name eks-copa-hackhaton2023
+#aws eks --region $AWS_REGION update-kubeconfig --name eks-copa-hackhaton2023
 
-kubectl get nodes
+#kubectl get nodes
 
-STACK_NAME=$(eksctl get nodegroup --cluster eks-copa-hackhaton2023 -o json | jq -r '.[].StackName')
-ROLE_NAME=$(aws cloudformation describe-stack-resources --stack-name $STACK_NAME | jq -r '.StackResources[] | select(.ResourceType=="AWS::IAM::Role") | .PhysicalResourceId')
-echo "export ROLE_NAME=${ROLE_NAME}" | tee -a /home/ec2-user/.bash_profile
+#STACK_NAME=$(eksctl get nodegroup --cluster eks-copa-hackhaton2023 -o json | jq -r '.[].StackName')
+#ROLE_NAME=$(aws cloudformation describe-stack-resources --stack-name $STACK_NAME | jq -r '.StackResources[] | select(.ResourceType=="AWS::IAM::Role") | .PhysicalResourceId')
+#echo "export ROLE_NAME=${ROLE_NAME}" | tee -a /home/ec2-user/.bash_profile
 
-echo "Setup eks cluster"
+#echo "Setup eks cluster"
 
-echo "------------------------------------------------------"
+#echo "------------------------------------------------------"
 
-rolearn=$(aws iam get-role --role-name TeamRole --query Role.Arn --output text)
+#rolearn=$(aws iam get-role --role-name TeamRole --query Role.Arn --output text)
 
-eksctl create iamidentitymapping --cluster eks-copa-hackhaton2023 --arn ${rolearn} --group system:masters --username admin
+#eksctl create iamidentitymapping --cluster eks-copa-hackhaton2023 --arn ${rolearn} --group system:masters --username admin
 
-echo "Added console credentials for console access"
+#echo "Added console credentials for console access"
 
-echo "------------------------------------------------------"
-echo "aws eks update-kubeconfig --name eks-copa-hackhaton2023 --region ${AWS_REGION}" | tee -a /home/ec2-user/.bash_profile
-echo "export LAB_CLUSTER_ID=eks-copa-hackhaton2023" | tee -a /home/ec2-user/.bash_profile
+#echo "------------------------------------------------------"
 
 echo "Completed cluster setup"
 
