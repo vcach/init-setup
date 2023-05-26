@@ -35,6 +35,11 @@ echo "export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identi
 .  ~/.bash_profile
 echo "export AZS=($(aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --output text --region $AWS_REGION))"  >>  ~/.bash_profile
 .  ~/.bash_profile
+
+echo "Generating unique ID..."
+
+echo "export TEAM_ID=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)" >>  ~/.bash_profile
+
 source ~/.bash_profile
 
 aws configure set default.region ${AWS_REGION}
@@ -50,7 +55,7 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: eks-copa-hackhaton2023
+  name: eks-hackathon2023-${TEAM_ID}
   region: ${AWS_REGION}
   version: "1.23"
 
@@ -76,7 +81,7 @@ echo "AWS Load Balancer Controller..."
 
 eksctl utils associate-iam-oidc-provider \
     --region ${AWS_REGION} \
-    --cluster eks-copa-hackhaton2023 \
+    --cluster eks-hackathon2023-${TEAM_ID} \
     --approve
 
 curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.7/docs/install/iam_policy.json
@@ -87,7 +92,7 @@ aws iam create-policy \
 rm iam_policy.json
 
 eksctl create iamserviceaccount \
-  --cluster eks-copa-hackhaton2023 \
+  --cluster eks-hackathon2023-${TEAM_ID} \
   --namespace kube-system \
   --name aws-load-balancer-controller \
   --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy \
@@ -96,15 +101,15 @@ eksctl create iamserviceaccount \
 
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
-  --set clusterName=eks-copa-hackhaton2023 \
+  --set clusterName=eks-hackathon2023-${TEAM_ID} \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller 
 
-#aws eks --region $AWS_REGION update-kubeconfig --name eks-copa-hackhaton2023
+#aws eks --region $AWS_REGION update-kubeconfig --name eks-hackathon2023-${TEAM_ID}
 
 #kubectl get nodes
 
-#STACK_NAME=$(eksctl get nodegroup --cluster eks-copa-hackhaton2023 -o json | jq -r '.[].StackName')
+#STACK_NAME=$(eksctl get nodegroup --cluster eks-hackathon2023-${TEAM_ID} -o json | jq -r '.[].StackName')
 #ROLE_NAME=$(aws cloudformation describe-stack-resources --stack-name $STACK_NAME | jq -r '.StackResources[] | select(.ResourceType=="AWS::IAM::Role") | .PhysicalResourceId')
 #echo "export ROLE_NAME=${ROLE_NAME}" | tee -a /home/ec2-user/.bash_profile
 
@@ -114,7 +119,7 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 
 #rolearn=$(aws iam get-role --role-name TeamRole --query Role.Arn --output text)
 
-#eksctl create iamidentitymapping --cluster eks-copa-hackhaton2023 --arn ${rolearn} --group system:masters --username admin
+#eksctl create iamidentitymapping --cluster eks-hackathon2023-${TEAM_ID} --arn ${rolearn} --group system:masters --username admin
 
 #echo "Added console credentials for console access"
 
