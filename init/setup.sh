@@ -105,25 +105,19 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller 
 
-#aws eks --region $AWS_REGION update-kubeconfig --name eks-hackathon2023-${TEAM_ID}
-
-#kubectl get nodes
-
 #STACK_NAME=$(eksctl get nodegroup --cluster eks-hackathon2023-${TEAM_ID} -o json | jq -r '.[].StackName')
 #ROLE_NAME=$(aws cloudformation describe-stack-resources --stack-name $STACK_NAME | jq -r '.StackResources[] | select(.ResourceType=="AWS::IAM::Role") | .PhysicalResourceId')
 #echo "export ROLE_NAME=${ROLE_NAME}" | tee -a /home/ec2-user/.bash_profile
 
-#echo "Setup eks cluster"
+echo "Setup eks cluster..."
 
-#echo "------------------------------------------------------"
+echo "aws eks --region $AWS_REGION update-kubeconfig --name eks-hackathon2023-${TEAM_ID} --region ${AWS_REGION}"
 
-#rolearn=$(aws iam get-role --role-name TeamRole --query Role.Arn --output text)
+rolearn=$(aws iam get-role --role-name TeamRole --query Role.Arn --output text)
 
-#eksctl create iamidentitymapping --cluster eks-hackathon2023-${TEAM_ID} --arn ${rolearn} --group system:masters --username admin
+eksctl create iamidentitymapping --cluster eks-hackathon2023-${TEAM_ID} --arn ${rolearn} --group system:masters --username admin
 
-#echo "Added console credentials for console access"
-
-#echo "------------------------------------------------------"
+echo "export CLUSTER_NAME=eks-hackathon2023-${TEAM_ID}" | tee -a /home/ec2-user/.bash_profile
 
 echo "Completed cluster setup"
 
